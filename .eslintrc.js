@@ -30,6 +30,10 @@ module.exports = {
     'arrow-body-style': ['off'],
     'no-restricted-globals': ['error', 'event', 'fdescribe'],
     'import/prefer-default-export': 'off',
+    'import/no-extraneous-dependencies': [
+      'error',
+      { devDependencies: ['**/test/*.*', '**/*.spec.ts*', '**/*.test.ts'] },
+    ],
     'no-console': ['warn'],
     'no-debugger': ['warn'],
 
