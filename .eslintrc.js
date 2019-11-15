@@ -16,13 +16,13 @@ module.exports = {
   },
   settings: {
     // 'import/core-modules': ['@test/gqltest', '@test/mongoHelper', '@test/fixtures'],
-    // 'import/resolver': {
-    //   node: true,
-    //   alias: {
-    //     map: [['@', path.join(__dirname, 'src')], ['@test', path.join(__dirname, 'test')]],
-    //     extensions: ['.ts', '.js', '.jsx', '.json'],
-    //   },
-    // },
+    'import/resolver': {
+      node: true,
+      alias: {
+        // map: [['@', path.join(__dirname, 'src')], ['@test', path.join(__dirname, 'test')]],
+        extensions: ['.ts', '.js', '.jsx', '.json'],
+      },
+    },
   },
   rules: {
     // Our taste
