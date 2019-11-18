@@ -1,0 +1,17 @@
+overwrite: true
+schema: './src/**/*.schema.ts'
+documents: null
+generates:
+  ./src/types/graphql.ts:
+    config:
+      contextType: ../schemas#Context
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-resolvers'
+  ./schema.json:
+    plugins:
+      - 'introspection'
+hooks:
+  afterOneFileWrite:
+    - prettier --write
