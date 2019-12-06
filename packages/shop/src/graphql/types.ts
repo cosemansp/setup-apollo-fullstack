@@ -1,8 +1,10 @@
+/* eslint:disable */
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { Context } from '../graphql';
+import { Context } from './context';
 export type Maybe<T> = T | null;
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } &
   { [P in K]-?: NonNullable<T[P]> };
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -145,7 +147,8 @@ export type Query = {
   __typename?: 'Query';
   basket?: Maybe<Basket>;
   product?: Maybe<Product>;
-  allProducts?: Maybe<ProductConnection>;
+  products?: Maybe<Array<Maybe<Product>>>;
+  productsConnection?: Maybe<ProductConnection>;
 };
 
 export type QueryBasketArgs = {
@@ -156,7 +159,11 @@ export type QueryProductArgs = {
   id?: Maybe<Scalars['Int']>;
 };
 
-export type QueryAllProductsArgs = {
+export type QueryProductsArgs = {
+  orderBy?: Maybe<Scalars['String']>;
+};
+
+export type QueryProductsConnectionArgs = {
   orderBy?: Maybe<Scalars['String']>;
   first?: Maybe<Scalars['Int']>;
   after?: Maybe<Scalars['String']>;
@@ -450,11 +457,17 @@ export type QueryResolvers<
     RequireFields<QueryBasketArgs, 'checkoutID'>
   >;
   product?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, QueryProductArgs>;
-  allProducts?: Resolver<
+  products?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['Product']>>>,
+    ParentType,
+    ContextType,
+    QueryProductsArgs
+  >;
+  productsConnection?: Resolver<
     Maybe<ResolversTypes['ProductConnection']>,
     ParentType,
     ContextType,
-    QueryAllProductsArgs
+    QueryProductsConnectionArgs
   >;
 };
 

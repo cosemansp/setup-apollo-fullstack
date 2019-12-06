@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface JWTPayload {
   id: string;
   email?: string;
@@ -8,5 +10,6 @@ export interface JWTPayload {
 export interface User extends JWTPayload {}
 
 export interface Context {
+  req: Request;
   user: User;
 }

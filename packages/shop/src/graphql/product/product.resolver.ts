@@ -1,12 +1,28 @@
-import { Resolvers } from '../../types/graphql';
+import { Resolvers } from '../types';
+import { getAllProducts, getProduct } from '../../data/products';
+import sortOn from 'sort-on';
+import arrayToConnection from '../../utils/arrayToConnection';
 
 export const resolvers: Resolvers = {
   Query: {
     product(root, args, context) {
-      return null;
+      return getProduct(args.id);
     },
-    allProducts(root, { orderBy, first, after, before, last }, { user }) {
-      return null;
+    products(root, args, { user }) {
+      let products = getAllProducts();
+      if (args.orderBy) {
+        products = sortOn(products, args.orderBy);
+      }
+      return products;
+    },
+    productsConnection(root, args, { user }) {
+      let products = getAllProducts();
+      if (args.orderBy) {
+        products = sortOn(products, args.orderBy);
+      }
+      return {
+        ...arrayToConnection(products, args),
+      };
     },
   },
   Mutation: {

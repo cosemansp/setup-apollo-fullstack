@@ -11,5 +11,3 @@ export const typeDefs = gql`
     hasPreviousPage: Boolean!
   }
 `;
-
-export const resolvers = {};

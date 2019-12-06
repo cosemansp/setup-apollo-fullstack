@@ -8,6 +8,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 // don't log for testing environment
 const logLevel =
   process.env.LOG_LEVEL || (process.env.NODE_ENV === 'test' ? bunyan.FATAL : bunyan.INFO);
+
 export const logManager = {
   getLogger(name: string) {
     const logName = name || ' ';

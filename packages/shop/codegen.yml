@@ -2,14 +2,15 @@ overwrite: true
 schema: './src/**/*.schema.ts'
 documents: null
 generates:
-  ./src/types/graphql.ts:
-    config:
-      contextType: ../schemas#Context
+  ./src/graphql/types.ts:
     plugins:
+      - add: '/* eslint:disable */'
       - 'typescript'
       - 'typescript-operations'
       - 'typescript-resolvers'
-  ./schema.json:
+    config:
+      contextType: ./context#Context
+  ./graphql.schema.json:
     plugins:
       - 'introspection'
 hooks:

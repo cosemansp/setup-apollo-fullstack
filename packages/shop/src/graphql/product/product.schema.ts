@@ -47,7 +47,8 @@ export const typeDefs = gql`
 
   type Query {
     product(id: Int): Product
-    allProducts(
+    products(orderBy: String): [Product]
+    productsConnection(
       orderBy: String
       first: Int
       after: String

@@ -64,7 +64,34 @@
             "deprecationReason": null
           },
           {
-            "name": "allProducts",
+            "name": "products",
+            "description": "",
+            "args": [
+              {
+                "name": "orderBy",
+                "description": "",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Product",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "productsConnection",
             "description": "",
             "args": [
               {

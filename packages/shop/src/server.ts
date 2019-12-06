@@ -1,10 +1,14 @@
 import app from './express';
 import config, { dumpConfig } from './config';
 import { log } from './logManager';
+import { seedProducts } from './data/products';
 
 // Dump Config
 log.info(`-------- 'Shop' starting: ${config.VERSION}  --------`);
 dumpConfig(log, config);
+
+// generate seed data
+seedProducts();
 
 // Listen for http request
 const httpServer = app.listen(config.PORT, () => {
