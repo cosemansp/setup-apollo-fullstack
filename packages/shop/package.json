@@ -23,6 +23,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/register": "^7.7.4",
     "@graphql-codegen/cli": "^1.8.3",
     "@graphql-codegen/introspection": "^1.8.3",
     "@graphql-codegen/typescript": "^1.8.3",

@@ -4,7 +4,7 @@ import { log } from './logManager';
 import { seedUsers } from './data/users';
 
 // Dump Config
-log.info(`-------- 'Shop' starting: ${config.VERSION}  --------`);
+log.info(`-------- 'Accounts' starting: ${config.VERSION}  --------`);
 dumpConfig(log, config);
 
 // generate seed data

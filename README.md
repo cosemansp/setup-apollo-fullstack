@@ -13,6 +13,15 @@ yarn clean
 # build all packages (apps)
 # will run `yarn build` in every package
 yarn build
+
+# start all micro services
+npx pm2 start
+
+# show logs
+npx pm2 log
+
+# show running processes
+npx pm2 list
 ```
 
 ## Resources
