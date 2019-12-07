@@ -11,9 +11,8 @@ const config = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: +process.env.PORT || 4000,
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
-  SERVICE_SHOP_URL: process.env.SERVICE_SHOP_URL,
-  SERVICE_ACCOUNTS_URL: process.env.SERVICE_ACCOUNTS_URL,
   STARTUP_DELAY: Number(process.env.STARTUP_DELAY),
+  POLL_INTERVAL: Number(process.env.POLL_INTERVAL || 0),
 };
 
 export type Config = typeof config;

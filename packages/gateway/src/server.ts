@@ -2,11 +2,15 @@ import { ApolloServer } from 'apollo-server-express';
 import express, { Express } from 'express';
 import config, { dumpConfig } from './config';
 import { gateway } from './gateway';
+import { getConfig, waitForServices } from './support';
 import { log } from './logManager';
 
 // Dump Config
 log.info(`-------- 'Shop' starting: ${config.VERSION}  --------`);
 dumpConfig(log, config);
+
+const serviceUrls = getConfig().map(({ url }) => url);
+log.info('serviceUrls', serviceUrls);
 
 createApp()
   .then((app) => {
@@ -32,10 +36,6 @@ createApp()
     process.exit(-1);
   });
 
-function wait(delay) {
-  return new Promise((resolve) => setTimeout(resolve, delay));
-}
-
 async function createApp(): Promise<Express> {
   const app = express();
 
@@ -49,11 +49,8 @@ async function createApp(): Promise<Express> {
     });
   });
 
-  // delay loading of federated schema until services can startup
-  if (config.STARTUP_DELAY) {
-    log.info('Waiting to load federated schemas...');
-    await wait(config.STARTUP_DELAY);
-  }
+  // wait for services to come online
+  await waitForServices(serviceUrls);
 
   // load federation schema
   // this throws an error when no federated services are not available
@@ -62,8 +59,14 @@ async function createApp(): Promise<Express> {
   // create apollo server to proxy the federation requests
   const apolloServer = new ApolloServer({
     ...gatewayConfig,
+    subscriptions: false,
+    cacheControl: {
+      defaultMaxAge: 5,
+    },
     context: ({ req }) => {
-      return { ...req.headers };
+      return {
+        headers: req.headers,
+      };
     },
   });
 
