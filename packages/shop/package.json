@@ -42,6 +42,7 @@
     "rimraf": "^3.0.0"
   },
   "dependencies": {
+    "@apollo/federation": "^0.11.2",
     "@graphql-codegen/add": "^1.9.1",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "apollo-server": "2.9.9",
@@ -49,6 +50,7 @@
     "body-parser": "^1.19.0",
     "cors": "2.8.5",
     "dataloader": "1.4.0",
+    "dotenv-flow": "^3.1.0",
     "express": "^4.17.1",
     "express-asyncify": "1.0.0",
     "express-jwt": "5.3.1",

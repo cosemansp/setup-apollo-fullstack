@@ -9,8 +9,11 @@ dotEnvFlow.config();
 const config = {
   VERSION: '1.0.0',
   NODE_ENV: process.env.NODE_ENV,
-  PORT: +process.env.PORT || 3001,
+  PORT: +process.env.PORT || 4000,
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
+  SERVICE_SHOP_URL: process.env.SERVICE_SHOP_URL,
+  SERVICE_ACCOUNTS_URL: process.env.SERVICE_ACCOUNTS_URL,
+  STARTUP_DELAY: Number(process.env.STARTUP_DELAY),
 };
 
 export type Config = typeof config;

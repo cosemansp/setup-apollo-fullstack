@@ -1,5 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
-import { makeExecutableSchema } from 'apollo-server';
+// import { makeExecutableSchema } from 'apollo-server';
+import { buildFederatedSchema } from '@apollo/federation';
 import { resolvers } from './resolvers';
 import { typeDefs } from './schema';
 import { Context } from './context';
@@ -8,11 +9,13 @@ import util from 'util';
 
 const log = logManager.getLogger('root.graphql');
 
-export const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-  allowUndefinedInResolve: true,
-});
+export const schema = buildFederatedSchema([{ typeDefs, resolvers }]);
+
+// export const schema = makeExecutableSchema({
+//   typeDefs,
+//   resolvers,
+//   allowUndefinedInResolve: true,
+// });
 
 export const server = new ApolloServer({
   schema,
