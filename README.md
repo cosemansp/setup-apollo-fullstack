@@ -24,6 +24,20 @@ npx pm2 log
 npx pm2 list
 ```
 
+## ToDo
+
+[*] Basic graphql setup with Apollo and Typescript
+[*] Shop Queries
+[*] Accounts Queries
+[*] Basic Gateway with Graphql Federation
+[*] PM2 Setup to launch micro services and gateway
+[ ] Integration Testing with graphql
+[ ] Add MongoDB to accounts service
+[ ] Dataloader to avoid N+1 problem
+[ ] Mutations and error handling
+[ ] Advanced Federation features like type references, type extensions
+[ ] Handling security with custom directives
+
 ## Resources
 
 - https://github.com/Dreamscapes/eslint-import-resolver-lerna
