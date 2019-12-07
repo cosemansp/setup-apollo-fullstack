@@ -34,6 +34,8 @@
     "@types/jest": "^24.0.11",
     "@types/mongoose": "^5.3.26",
     "@types/supertest": "^2.0.7",
+    "apollo-server-integration-testing": "^2.2.0",
+    "apollo-server-testing": "^2.9.13",
     "expect-more-jest": "^3.0.0",
     "jest": "^24.7.1",
     "jest-junit": "^9.0.0",

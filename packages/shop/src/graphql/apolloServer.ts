@@ -17,13 +17,14 @@ export const schema = buildFederatedSchema([
   { typeDefs: Basket, resolvers: basketResolvers },
 ]);
 
+// Create schema without federation
 // export const schema = makeExecutableSchema({
 //   typeDefs: [Root, Product, Basket],
 //   resolvers: [productResolvers, basketResolvers],
 //   allowUndefinedInResolve: false,
 // });
 
-export const server = new ApolloServer({
+export const apolloServer = new ApolloServer({
   schema,
   context: ({ res, req }): Context => {
     // get user from authorization token

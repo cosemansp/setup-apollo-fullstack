@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { server as graphqlServer } from './graphql/server';
+import { apolloServer } from './graphql/apolloServer';
 import config from './config';
 
 const app = express();
@@ -22,12 +22,11 @@ app.get('/', (_, res) => {
     status: 'OK',
     name: 'Shop',
     version: config.VERSION,
-    buildDate: config.BUILD_DATE,
   });
 });
 
 // attach graphql
-graphqlServer.applyMiddleware({
+apolloServer.applyMiddleware({
   app,
 });
 

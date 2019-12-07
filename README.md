@@ -31,7 +31,7 @@ npx pm2 list
 [*] Accounts Queries
 [*] Basic Gateway with Graphql Federation
 [*] PM2 Setup to launch micro services and gateway
-[ ] Integration Testing with graphql
+[*] Integration Testing with graphql
 [ ] Add MongoDB to accounts service
 [ ] Dataloader to avoid N+1 problem
 [ ] Mutations and error handling

@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`My test dot this 1`] = `
+Object {
+  "basket": Object {
+    "checkoutID": "abc",
+    "items": Array [
+      Object {
+        "id": "1",
+        "product": Object {
+          "id": 1,
+          "title": "pellentesque",
+        },
+        "quantity": 1,
+      },
+      Object {
+        "id": "2",
+        "product": Object {
+          "id": 2,
+          "title": "ut",
+        },
+        "quantity": 4,
+      },
+    ],
+  },
+}
+`;
