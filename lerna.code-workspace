@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "packages/shop"
+		},
+		{
+			"path": "packages/accounts"
+		},
+		{
+			"path": "packages/gateway"
+		}
+	],
+	"settings": {
+		"files.autoSave": "onFocusChange",
+		"typescript.tsdk": "node_modules/typescript/lib"
+	}
+}
