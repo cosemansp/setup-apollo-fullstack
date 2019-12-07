@@ -7,7 +7,7 @@
     "build": "npx babel src -d build --extensions '.ts'",
     "start": "node ./build/server.js",
     "start:dev": "babel-node src/server.ts -x .ts",
-    "start:watch": "nodemon --exec 'babel-node src/server.ts -x .ts' -e ts",
+    "start:watch": "nodemon --delay 1000ms --exec 'babel-node src/server.ts -x .ts' -e ts",
     "lint": "eslint \"src/**/*.{js,ts}\"",
     "format": "prettier --write \"src/**/*.{ts,json}\"",
     "lint:types": "tsc",
