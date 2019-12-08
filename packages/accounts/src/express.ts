@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { server as graphqlServer } from './graphql/server';
+import { server as graphqlServer } from './graphql/apolloServer';
 import config from './config';
 
 const app = express();

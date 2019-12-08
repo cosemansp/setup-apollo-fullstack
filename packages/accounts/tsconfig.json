@@ -16,6 +16,8 @@
     "isolatedModules": false,
     // Import non-ES modules as default imports.
     "esModuleInterop": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,

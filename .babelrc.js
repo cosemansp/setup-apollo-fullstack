@@ -34,16 +34,16 @@ module.exports = {
     //   },
     // ],
     // Alias support for build & jest
-    // [
-    //   require('babel-plugin-module-resolver'),
-    //   {
-    //     root: ['.'],
-    //     alias: {
-    //       '@': './src',
-    //       '@test': './test',
-    //     },
-    //   },
-    // ],
+    [
+      require('babel-plugin-module-resolver'),
+      {
+        root: ['.'],
+        alias: {
+          '@': './src',
+          '@test': './test',
+        },
+      },
+    ],
   ].filter(Boolean), // remove empty plugins
   env: {},
 };

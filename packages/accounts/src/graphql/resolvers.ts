@@ -1,31 +1,30 @@
-import { Resolvers } from './types';
-import { getAllUsers, getUser, deleteUser } from '../data/users';
+import { Resolvers, User } from './types';
+import { UserModel } from '../domain/userModel';
 
 export const resolvers: Resolvers = {
   Query: {
     me(root, args, context) {
       return {
         id: 12,
-        firstName: 'john',
-        lastName: 'doe',
+        name: 'john doe',
         email: 'test',
       };
     },
-    user: (root, args, context) => {
-      const user = getUser(args.id);
-      return user;
+    async user(root, args, { dataSources }) {
+      return await dataSources.user.loadOne(args.id);
     },
-    users(root, args, context) {
-      const users = getAllUsers();
-      return users;
+    async users(root, args, { dataSources }) {
+      return await dataSources.user.loadManyByQuery({});
     },
   },
   Mutation: {
-    // addOrUpdateProduct(root, args, context) {
-    //   return null;
-    // },
-    // deleteProduct(root, args, context) {
-    //   return null;
-    // },
+    async register(root, args, { dataSources }) {
+      const user = new UserModel({
+        name: args.name,
+        email: args.email,
+        password: args.password,
+      });
+      return await user.save();
+    },
   },
 };

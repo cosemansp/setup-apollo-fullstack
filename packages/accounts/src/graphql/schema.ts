@@ -3,29 +3,28 @@ import { gql } from 'apollo-server';
 export const typeDefs = gql`
   # Types
 
-  type Address {
-    street: String
-    city: String
-    zip: String
-  }
+  # type Address {
+  #   street: String
+  #   city: String
+  #   zip: String
+  # }
 
   type User {
-    id: Int
-    firstName: String
-    lastName: String
+    id: ID
+    name: String
     age: Int
     email: String
     image: String
     phone: String
     company: String
-    address: Address
+    # address: Address
   }
 
   # Queries
 
   type Query {
     me: User
-    user(id: Int): User
+    user(id: ID!): User
     users: [User]
   }
 

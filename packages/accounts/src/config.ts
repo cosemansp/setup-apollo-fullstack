@@ -11,7 +11,12 @@ const config = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: +process.env.PORT || 3001,
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
+  MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/accounts',
 };
+
+export const isDev = () => config.NODE_ENV === 'development';
+export const isTest = () => config.NODE_ENV === 'development';
+export const isProduction = () => config.NODE_ENV === 'development';
 
 export type Config = typeof config;
 

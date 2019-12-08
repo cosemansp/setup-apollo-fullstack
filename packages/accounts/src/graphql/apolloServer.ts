@@ -6,6 +6,7 @@ import { typeDefs } from './schema';
 import { Context } from './context';
 import { logManager } from '../logManager';
 import util from 'util';
+import { UserDataSource } from '@/dataSources/userDataSource';
 
 const log = logManager.getLogger('root.graphql');
 
@@ -19,7 +20,7 @@ export const schema = buildFederatedSchema([{ typeDefs, resolvers }]);
 
 export const server = new ApolloServer({
   schema,
-  context: ({ res, req }): Context => {
+  context: ({ res, req }): Omit<Context, 'dataSources'> => {
     // get user from authorization token
     // don't verity, authorization is performed at the gateway level
     // (jwt.decode(req.headers.authorization) || {}) as User;
@@ -27,6 +28,11 @@ export const server = new ApolloServer({
     return {
       user,
       req,
+    };
+  },
+  dataSources() {
+    return {
+      user: new UserDataSource(),
     };
   },
   formatError: (err) => {
