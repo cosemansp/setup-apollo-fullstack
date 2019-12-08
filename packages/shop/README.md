@@ -29,3 +29,5 @@ yarn build
 ## Resources
 
 - https://www.youtube.com/watch?v=7oLczJD6zZI&feature=youtu.be
+- https://github.com/jbaxleyiii/federation-demo/blob/f9dfe1e020c1e7c68683e035e3ae89d7232fd74e/accounts-service/src/index.ts
+- https://github.com/katsukiwataru/fullstack-tutorial/blob/master/final/server/src/utils.js

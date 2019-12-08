@@ -1,7 +1,7 @@
 import app from './express';
 import config, { dumpConfig } from './config';
 import { log } from './logManager';
-import { seedProducts } from './data/products';
+import { seedProducts } from './dataSources/productDataSource';
 
 // Dump Config
 log.info(`-------- 'Shop' starting: ${config.VERSION}  --------`);

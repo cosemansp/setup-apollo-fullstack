@@ -1,7 +1,7 @@
 import { createTestClient } from 'apollo-server-testing';
 import gql from 'graphql-tag';
 import { apolloServer } from '../apolloServer';
-import { seedProducts } from '../../data/products';
+import { seedProducts } from '../../dataSources/productDataSource';
 
 const { query, mutate } = createTestClient(apolloServer as any);
 

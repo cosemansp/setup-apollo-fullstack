@@ -1,22 +1,21 @@
 import { Resolvers } from '../types';
-import { getAllProducts, getProduct } from '../../data/products';
 import sortOn from 'sort-on';
 import arrayToConnection from '../../utils/arrayToConnection';
 
 export const resolvers: Resolvers = {
   Query: {
-    product(root, args, context) {
-      return getProduct(args.id);
+    product(root, args, { dataSources }) {
+      return dataSources.products.getById(args.id);
     },
-    products(root, args, { user }) {
-      let products = getAllProducts();
+    products(root, args, { user, dataSources }) {
+      let products = dataSources.products.getAll();
       if (args.orderBy) {
         products = sortOn(products, args.orderBy);
       }
       return products;
     },
-    productsConnection(root, args, { user }) {
-      let products = getAllProducts();
+    productsConnection(root, args, { user, dataSources }) {
+      let products = dataSources.products.getAll();
       if (args.orderBy) {
         products = sortOn(products, args.orderBy);
       }
