@@ -12,6 +12,9 @@ const config = {
   PORT: +process.env.PORT || 3001,
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
   MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/accounts',
+  ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET || 'secret',
+  REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET || 'secret',
+  FEDERATED: process.env.FEDERATED == 'true' || false,
 };
 
 export const isDev = () => config.NODE_ENV === 'development';

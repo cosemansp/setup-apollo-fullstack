@@ -1,8 +1,8 @@
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { UserDataSource } from '../dataSources/userDataSource';
 
 export interface JWTPayload {
-  id: string;
+  sub: string;
   email?: string;
   iat?: number;
   exp?: number;
@@ -12,7 +12,8 @@ export interface User extends JWTPayload {}
 
 export interface Context {
   req: Request;
-  user: User;
+  res: Response;
+  user?: User;
   dataSources: {
     user: UserDataSource;
   };

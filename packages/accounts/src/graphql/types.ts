@@ -2,6 +2,8 @@
 import { GraphQLResolveInfo } from 'graphql';
 import { Context } from './context';
 export type Maybe<T> = T | null;
+export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } &
+  { [P in K]-?: NonNullable<T[P]> };
 
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -19,23 +21,31 @@ export type Address = {
   zip?: Maybe<Scalars['String']>;
 };
 
+export type LoginInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type LoginPayload = {
+  __typename?: 'LoginPayload';
+  error?: Maybe<Scalars['String']>;
+  accessToken?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Login user */
-  login?: Maybe<User>;
+  login?: Maybe<LoginPayload>;
   /** Register as a new user */
-  register?: Maybe<User>;
+  register?: Maybe<RegisterPayload>;
 };
 
 export type MutationLoginArgs = {
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
+  input?: Maybe<LoginInput>;
 };
 
 export type MutationRegisterArgs = {
-  name?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
+  input?: Maybe<RegisterInput>;
 };
 
 export type Query = {
@@ -46,14 +56,24 @@ export type Query = {
 };
 
 export type QueryUserArgs = {
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['ID'];
+};
+
+export type RegisterInput = {
+  name: Scalars['String'];
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type RegisterPayload = {
+  __typename?: 'RegisterPayload';
+  user?: Maybe<User>;
 };
 
 export type User = {
   __typename?: 'User';
-  id?: Maybe<Scalars['Int']>;
-  firstName?: Maybe<Scalars['String']>;
-  lastName?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['ID']>;
+  name?: Maybe<Scalars['String']>;
   age?: Maybe<Scalars['Int']>;
   email?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
@@ -144,10 +164,15 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Address: ResolverTypeWrapper<Address>;
   Mutation: ResolverTypeWrapper<{}>;
+  LoginInput: LoginInput;
+  LoginPayload: ResolverTypeWrapper<LoginPayload>;
+  RegisterInput: RegisterInput;
+  RegisterPayload: ResolverTypeWrapper<RegisterPayload>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
 
@@ -155,10 +180,15 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Query: {};
   User: User;
-  Int: Scalars['Int'];
+  ID: Scalars['ID'];
   String: Scalars['String'];
+  Int: Scalars['Int'];
   Address: Address;
   Mutation: {};
+  LoginInput: LoginInput;
+  LoginPayload: LoginPayload;
+  RegisterInput: RegisterInput;
+  RegisterPayload: RegisterPayload;
   Boolean: Scalars['Boolean'];
 };
 
@@ -171,12 +201,30 @@ export type AddressResolvers<
   zip?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
+export type LoginPayloadResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['LoginPayload'] = ResolversParentTypes['LoginPayload']
+> = {
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  accessToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
 export type MutationResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = {
-  login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, MutationLoginArgs>;
-  register?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, MutationRegisterArgs>;
+  login?: Resolver<
+    Maybe<ResolversTypes['LoginPayload']>,
+    ParentType,
+    ContextType,
+    MutationLoginArgs
+  >;
+  register?: Resolver<
+    Maybe<ResolversTypes['RegisterPayload']>,
+    ParentType,
+    ContextType,
+    MutationRegisterArgs
+  >;
 };
 
 export type QueryResolvers<
@@ -184,17 +232,28 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = {
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, QueryUserArgs>;
+  user?: Resolver<
+    Maybe<ResolversTypes['User']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryUserArgs, 'id'>
+  >;
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+};
+
+export type RegisterPayloadResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['RegisterPayload'] = ResolversParentTypes['RegisterPayload']
+> = {
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
 export type UserResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']
 > = {
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   age?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -205,8 +264,10 @@ export type UserResolvers<
 
 export type Resolvers<ContextType = Context> = {
   Address?: AddressResolvers<ContextType>;
+  LoginPayload?: LoginPayloadResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RegisterPayload?: RegisterPayloadResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 

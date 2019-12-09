@@ -12,6 +12,16 @@ const remapDocs = (docs: any[], ids: any[]) => {
   return ids.map((id) => idMap[id]);
 };
 
+const remapDoc = (doc: any) => {
+  if (!doc) {
+    return null;
+  }
+  return {
+    ...doc,
+    id: doc._id,
+  };
+};
+
 type ID = number | string | mongoose.Types.ObjectId;
 
 export class MongooseDataSource<
@@ -45,11 +55,13 @@ export class MongooseDataSource<
     return Promise.all(ids.map((id) => this.loadOne(id)));
   }
 
+  async loadOneByQuery(query: any): Promise<TDoc> {
+    const doc = await this.model.findOne(query).lean();
+    return remapDoc(doc);
+  }
+
   async loadManyByQuery(query: any): Promise<TDoc[]> {
-    const docs: any = await this.model.find(query).lean();
-    return docs.map((doc) => ({
-      ...doc,
-      id: doc._id,
-    }));
+    const docs = await this.model.find(query).lean();
+    return docs.map((doc) => remapDoc(doc));
   }
 }

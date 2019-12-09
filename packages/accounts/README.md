@@ -30,3 +30,6 @@ yarn build
 
 - https://patrickdesjardins.com/blog/apollo-graphql-resolvers-and-data-source-separation
 - https://brianflove.com/2016/10/04/typescript-declaring-mongoose-schema-model/
+- https://blog.hasura.io/best-practices-of-using-jwt-with-graphql/
+- https://medium.com/the-guild/authentication-and-authorization-in-graphql-and-how-graphql-modules-can-help-fadc1ee5b0c2
+- [JWT Authentication Node.js Tutorial with GraphQL and React](https://www.youtube.com/watch?v=25GS0MLT8JU)

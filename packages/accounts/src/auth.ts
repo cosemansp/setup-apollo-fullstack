@@ -1,14 +1,15 @@
-import { User } from './domain/user';
+import { User } from './domain/userModel';
 import { sign } from 'jsonwebtoken';
+import config from '@/config';
 
 export const createAccessToken = (user: User) => {
-  sign({ sub: user.id }, process.env.ACCESS_TOKEN_SECRET, {
+  return sign({ sub: user.id, email: user.email }, config.ACCESS_TOKEN_SECRET, {
     expiresIn: '15m',
   });
 };
 
 export const createRefreshToken = (user: User) => {
-  sign({ sub: user.id }, process.env.REFRESH_TOKEN_SECRET, {
+  return sign({ sub: user.id }, config.REFRESH_TOKEN_SECRET, {
     expiresIn: '7d',
   });
 };

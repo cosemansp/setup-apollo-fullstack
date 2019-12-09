@@ -3,11 +3,11 @@ import { gql } from 'apollo-server';
 export const typeDefs = gql`
   # Types
 
-  # type Address {
-  #   street: String
-  #   city: String
-  #   zip: String
-  # }
+  type Address {
+    street: String
+    city: String
+    zip: String
+  }
 
   type User {
     id: ID
@@ -17,7 +17,29 @@ export const typeDefs = gql`
     image: String
     phone: String
     company: String
-    # address: Address
+    address: Address
+  }
+
+  input RegisterInput {
+    name: String!
+    email: String!
+    password: String!
+  }
+
+  input LoginInput {
+    email: String!
+    password: String!
+  }
+
+  type RegisterPayload {
+    user: User
+  }
+
+  type LoginPayload {
+    error: String
+    user: User
+    accessToken: String
+    expires: Int
   }
 
   # Queries
@@ -34,11 +56,11 @@ export const typeDefs = gql`
     """
     Login user
     """
-    login(email: String, password: String): User
+    login(input: LoginInput): LoginPayload
 
     """
     Register as a new user
     """
-    register(name: String, email: String, password: String): User
+    register(input: RegisterInput): RegisterPayload
   }
 `;

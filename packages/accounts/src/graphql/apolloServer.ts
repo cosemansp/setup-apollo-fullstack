@@ -1,34 +1,61 @@
+import util from 'util';
 import { ApolloServer } from 'apollo-server-express';
-// import { makeExecutableSchema } from 'apollo-server';
 import { buildFederatedSchema } from '@apollo/federation';
+import { GraphQLSchema } from 'graphql';
+import { verify, decode } from 'jsonwebtoken';
+import { makeExecutableSchema } from 'apollo-server';
 import { resolvers } from './resolvers';
 import { typeDefs } from './schema';
-import { Context } from './context';
+import { Context, JWTPayload } from './context';
 import { logManager } from '../logManager';
-import util from 'util';
 import { UserDataSource } from '@/dataSources/userDataSource';
+import config from '@/config';
 
 const log = logManager.getLogger('root.graphql');
 
-export const schema = buildFederatedSchema([{ typeDefs, resolvers }]);
+// create GraphqlSchema
+let graphqlSchema: GraphQLSchema;
+if (config.FEDERATED) {
+  graphqlSchema = buildFederatedSchema([{ typeDefs, resolvers }]);
+} else {
+  graphqlSchema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
+    allowUndefinedInResolve: true,
+  });
+}
 
-// export const schema = makeExecutableSchema({
-//   typeDefs,
-//   resolvers,
-//   allowUndefinedInResolve: true,
-// });
+// we need to omit the dataSources because they are added later by the graphqlServer
+type BaseContext = Omit<Context, 'dataSources'>;
 
 export const server = new ApolloServer({
-  schema,
-  context: ({ res, req }): Omit<Context, 'dataSources'> => {
-    // get user from authorization token
-    // don't verity, authorization is performed at the gateway level
-    // (jwt.decode(req.headers.authorization) || {}) as User;
-    const user = { id: '123' };
-    return {
-      user,
+  schema: graphqlSchema,
+  context: ({ res, req }): BaseContext => {
+    // Base context
+    const context: BaseContext = {
       req,
+      res,
     };
+
+    // Add user on context if we have an authorization header
+    try {
+      const authorization = req.headers.authorization;
+      const token = authorization ? authorization.split(' ')[1] : '';
+      if (token) {
+        // if we have a token, verify it
+        if (config.FEDERATED) {
+          // when federated, let the gateway verify the token
+          context.user = decode(token) as JWTPayload;
+        } else {
+          context.user = verify(token, config.ACCESS_TOKEN_SECRET) as JWTPayload;
+        }
+      }
+    } catch (err) {
+      // we don't throw an error here
+      // the auth directives will handle the authorization
+      log.warn('Failed to verify accessToken, ERR: ', err.message);
+    }
+    return context;
   },
   dataSources() {
     return {
@@ -42,3 +69,5 @@ export const server = new ApolloServer({
   playground: true,
   introspection: true,
 });
+
+export const schema = graphqlSchema;

@@ -7,12 +7,14 @@ export interface Address {
 }
 
 export interface User {
+  id?: any;
   name?: string;
   age?: number;
   email?: string;
   image?: string;
   phone?: string;
   company?: string;
+  password?: string;
   //  address: Address;
 }
 
@@ -24,6 +26,7 @@ export var UserSchema: Schema = new Schema({
   image: String,
   phone: String,
   company: String,
+  password: String,
 });
 
 export type UserModelType = Model<UserDoc>;
