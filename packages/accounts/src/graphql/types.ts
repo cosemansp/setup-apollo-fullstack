@@ -21,23 +21,31 @@ export type Address = {
   zip?: Maybe<Scalars['String']>;
 };
 
+export type Authentication = {
+  __typename?: 'Authentication';
+  user: User;
+  accessToken: Scalars['String'];
+  expires: Scalars['Int'];
+};
+
+export type Error = {
+  reason: Scalars['String'];
+  code?: Maybe<Scalars['String']>;
+};
+
 export type LoginInput = {
   email: Scalars['String'];
   password: Scalars['String'];
 };
 
-export type LoginPayload = {
-  __typename?: 'LoginPayload';
-  error?: Maybe<Scalars['String']>;
-  accessToken?: Maybe<Scalars['String']>;
-};
+export type LoginPayload = Authentication | NotAuthorizedError;
 
 export type Mutation = {
   __typename?: 'Mutation';
   /** Login user */
-  login?: Maybe<LoginPayload>;
+  login: LoginPayload;
   /** Register as a new user */
-  register?: Maybe<RegisterPayload>;
+  register: RegisterPayload;
 };
 
 export type MutationLoginArgs = {
@@ -46,6 +54,12 @@ export type MutationLoginArgs = {
 
 export type MutationRegisterArgs = {
   input?: Maybe<RegisterInput>;
+};
+
+export type NotAuthorizedError = Error & {
+  __typename?: 'NotAuthorizedError';
+  reason: Scalars['String'];
+  code?: Maybe<Scalars['String']>;
 };
 
 export type Query = {
@@ -59,16 +73,20 @@ export type QueryUserArgs = {
   id: Scalars['ID'];
 };
 
+export type Registered = {
+  __typename?: 'Registered';
+  user: User;
+  accessToken: Scalars['String'];
+  expires: Scalars['Int'];
+};
+
 export type RegisterInput = {
   name: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
 };
 
-export type RegisterPayload = {
-  __typename?: 'RegisterPayload';
-  user?: Maybe<User>;
-};
+export type RegisterPayload = Registered | UserAlreadyExistError;
 
 export type User = {
   __typename?: 'User';
@@ -80,6 +98,12 @@ export type User = {
   phone?: Maybe<Scalars['String']>;
   company?: Maybe<Scalars['String']>;
   address?: Maybe<Address>;
+};
+
+export type UserAlreadyExistError = Error & {
+  __typename?: 'UserAlreadyExistError';
+  reason: Scalars['String'];
+  code?: Maybe<Scalars['String']>;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -170,9 +194,14 @@ export type ResolversTypes = {
   Address: ResolverTypeWrapper<Address>;
   Mutation: ResolverTypeWrapper<{}>;
   LoginInput: LoginInput;
-  LoginPayload: ResolverTypeWrapper<LoginPayload>;
+  LoginPayload: ResolversTypes['Authentication'] | ResolversTypes['NotAuthorizedError'];
+  Authentication: ResolverTypeWrapper<Authentication>;
+  NotAuthorizedError: ResolverTypeWrapper<NotAuthorizedError>;
+  Error: ResolverTypeWrapper<Error>;
   RegisterInput: RegisterInput;
-  RegisterPayload: ResolverTypeWrapper<RegisterPayload>;
+  RegisterPayload: ResolversTypes['Registered'] | ResolversTypes['UserAlreadyExistError'];
+  Registered: ResolverTypeWrapper<Registered>;
+  UserAlreadyExistError: ResolverTypeWrapper<UserAlreadyExistError>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
 
@@ -186,9 +215,16 @@ export type ResolversParentTypes = {
   Address: Address;
   Mutation: {};
   LoginInput: LoginInput;
-  LoginPayload: LoginPayload;
+  LoginPayload: ResolversParentTypes['Authentication'] | ResolversParentTypes['NotAuthorizedError'];
+  Authentication: Authentication;
+  NotAuthorizedError: NotAuthorizedError;
+  Error: Error;
   RegisterInput: RegisterInput;
-  RegisterPayload: RegisterPayload;
+  RegisterPayload:
+    | ResolversParentTypes['Registered']
+    | ResolversParentTypes['UserAlreadyExistError'];
+  Registered: Registered;
+  UserAlreadyExistError: UserAlreadyExistError;
   Boolean: Scalars['Boolean'];
 };
 
@@ -201,30 +237,54 @@ export type AddressResolvers<
   zip?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
+export type AuthenticationResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['Authentication'] = ResolversParentTypes['Authentication']
+> = {
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  expires?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
+export type ErrorResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']
+> = {
+  __resolveType: TypeResolveFn<
+    'NotAuthorizedError' | 'UserAlreadyExistError',
+    ParentType,
+    ContextType
+  >;
+  reason?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
 export type LoginPayloadResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['LoginPayload'] = ResolversParentTypes['LoginPayload']
 > = {
-  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  accessToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Authentication' | 'NotAuthorizedError', ParentType, ContextType>;
 };
 
 export type MutationResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = {
-  login?: Resolver<
-    Maybe<ResolversTypes['LoginPayload']>,
-    ParentType,
-    ContextType,
-    MutationLoginArgs
-  >;
+  login?: Resolver<ResolversTypes['LoginPayload'], ParentType, ContextType, MutationLoginArgs>;
   register?: Resolver<
-    Maybe<ResolversTypes['RegisterPayload']>,
+    ResolversTypes['RegisterPayload'],
     ParentType,
     ContextType,
     MutationRegisterArgs
   >;
+};
+
+export type NotAuthorizedErrorResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['NotAuthorizedError'] = ResolversParentTypes['NotAuthorizedError']
+> = {
+  reason?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
 export type QueryResolvers<
@@ -241,11 +301,20 @@ export type QueryResolvers<
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
 };
 
+export type RegisteredResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['Registered'] = ResolversParentTypes['Registered']
+> = {
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  expires?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
 export type RegisterPayloadResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['RegisterPayload'] = ResolversParentTypes['RegisterPayload']
 > = {
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Registered' | 'UserAlreadyExistError', ParentType, ContextType>;
 };
 
 export type UserResolvers<
@@ -262,13 +331,26 @@ export type UserResolvers<
   address?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType>;
 };
 
+export type UserAlreadyExistErrorResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['UserAlreadyExistError'] = ResolversParentTypes['UserAlreadyExistError']
+> = {
+  reason?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = Context> = {
   Address?: AddressResolvers<ContextType>;
-  LoginPayload?: LoginPayloadResolvers<ContextType>;
+  Authentication?: AuthenticationResolvers<ContextType>;
+  Error?: ErrorResolvers;
+  LoginPayload?: LoginPayloadResolvers;
   Mutation?: MutationResolvers<ContextType>;
+  NotAuthorizedError?: NotAuthorizedErrorResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
-  RegisterPayload?: RegisterPayloadResolvers<ContextType>;
+  Registered?: RegisteredResolvers<ContextType>;
+  RegisterPayload?: RegisterPayloadResolvers;
   User?: UserResolvers<ContextType>;
+  UserAlreadyExistError?: UserAlreadyExistErrorResolvers<ContextType>;
 };
 
 /**

@@ -35,7 +35,7 @@ npx pm2 list
 [*] MongoDB & MongooseDataSource to accounts service
 [*] Dataloader to avoid N+1 problem
 [*] Basic JWT Security
-[ ] Mutations and error handling
+[*] Mutations and error handling (see register & login)
 [ ] Advanced Federation features like type references, type extensions
 [ ] Handling security with custom directives
 

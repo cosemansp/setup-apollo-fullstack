@@ -20,6 +20,11 @@ export const typeDefs = gql`
     address: Address
   }
 
+  interface Error {
+    reason: String!
+    code: String
+  }
+
   input RegisterInput {
     name: String!
     email: String!
@@ -31,16 +36,30 @@ export const typeDefs = gql`
     password: String!
   }
 
-  type RegisterPayload {
-    user: User
+  type Registered {
+    user: User!
+    accessToken: String!
+    expires: Int!
   }
 
-  type LoginPayload {
-    error: String
-    user: User
-    accessToken: String
-    expires: Int
+  type Authentication {
+    user: User!
+    accessToken: String!
+    expires: Int!
   }
+
+  type UserAlreadyExistError implements Error {
+    reason: String!
+    code: String
+  }
+
+  type NotAuthorizedError implements Error {
+    reason: String!
+    code: String
+  }
+
+  union LoginPayload = Authentication | NotAuthorizedError
+  union RegisterPayload = Registered | UserAlreadyExistError
 
   # Queries
 
@@ -56,11 +75,11 @@ export const typeDefs = gql`
     """
     Login user
     """
-    login(input: LoginInput): LoginPayload
+    login(input: LoginInput): LoginPayload!
 
     """
     Register as a new user
     """
-    register(input: RegisterInput): RegisterPayload
+    register(input: RegisterInput): RegisterPayload!
   }
 `;
