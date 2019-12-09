@@ -36,6 +36,7 @@ npx pm2 list
 [*] Dataloader to avoid N+1 problem
 [*] Basic JWT Security
 [*] Mutations and error handling (see register & login)
+[*] Integration Testing with in memory DB and graphql
 [ ] Advanced Federation features like type references, type extensions
 [ ] Handling security with custom directives
 

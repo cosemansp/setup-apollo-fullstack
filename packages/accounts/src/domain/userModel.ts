@@ -29,5 +29,7 @@ export var UserSchema: Schema = new Schema({
   password: String,
 });
 
+UserSchema.set('toObject', { virtuals: true });
+
 export type UserModelType = Model<UserDoc>;
 export const UserModel: UserModelType = model<UserDoc>('User', UserSchema);

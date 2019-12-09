@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`registerAndLogin scenario register & login 1`] = `
+Object {
+  "register": Object {
+    "__typename": "Registered",
+    "accessToken": Any<String>,
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": Any<String>,
+      "name": "John Doe",
+    },
+  },
+}
+`;
+
+exports[`registerAndLogin scenario register & login 2`] = `
+Object {
+  "login": Object {
+    "__typename": "Authentication",
+    "accessToken": Any<String>,
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": Any<String>,
+      "name": "John Doe",
+    },
+  },
+}
+`;

@@ -68,7 +68,6 @@
     "setupFilesAfterEnv": [
       "<rootDir>/test/jest.setup.js"
     ],
-    "testEnvironment": "node",
     "moduleFileExtensions": [
       "ts",
       "js",

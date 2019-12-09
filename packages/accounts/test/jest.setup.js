@@ -1,4 +1,3 @@
 import 'expect-more-jest';
-import './supertest.matcher';
 
-process.env.LOG_LEVEL = 'error';
+process.env.LOG_LEVEL = 'fatal';

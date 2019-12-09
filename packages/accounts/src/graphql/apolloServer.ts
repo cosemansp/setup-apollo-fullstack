@@ -8,8 +8,9 @@ import { resolvers } from './resolvers';
 import { typeDefs } from './schema';
 import { Context, JWTPayload } from './context';
 import { logManager } from '../logManager';
+import { graphqlLogger } from './logger';
 import { UserDataSource } from '@/dataSources/userDataSource';
-import config from '@/config';
+import config, { isProduction } from '@/config';
 
 const log = logManager.getLogger('root.graphql');
 
@@ -28,7 +29,7 @@ if (config.FEDERATED) {
 // we need to omit the dataSources because they are added later by the graphqlServer
 type BaseContext = Omit<Context, 'dataSources'>;
 
-export const server = new ApolloServer({
+export const apolloServer = new ApolloServer({
   schema: graphqlSchema,
   context: ({ res, req }): BaseContext => {
     // Base context
@@ -66,8 +67,10 @@ export const server = new ApolloServer({
     log.error('GRAPQH_ERROR >>>', util.inspect(err, false, 4, true /* enable colors */));
     return err;
   },
+  extensions: [() => graphqlLogger],
   playground: true,
   introspection: true,
+  debug: true,
 });
 
 export const schema = graphqlSchema;
