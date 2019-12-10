@@ -6,30 +6,12 @@ import { UserModel } from '@/domain/userModel';
 import { sign } from 'jsonwebtoken';
 import config from '@/config';
 
-const token = sign({ roles: ['admin'] }, config.ACCESS_TOKEN_SECRET);
+const token = sign({ roles: ['admin'], scopes: ['user:Read'] }, config.ACCESS_TOKEN_SECRET);
 const { query } = createTestClient(apolloServer, {
   headers: {
     authorization: `Bearer ${token}`,
   },
 });
-
-const USERS_QUERY = gql`
-  query {
-    users {
-      name
-      email
-    }
-  }
-`;
-
-const USER_QUERY = gql`
-  query($id: ID!) {
-    user(id: $id) {
-      name
-      email
-    }
-  }
-`;
 
 describe('query users', () => {
   beforeAll(() => openDb());
@@ -54,7 +36,14 @@ describe('query users', () => {
 
   test(`single`, async () => {
     const result = await query({
-      query: USER_QUERY,
+      query: gql`
+        query($id: ID!) {
+          user(id: $id) {
+            name
+            email
+          }
+        }
+      `,
       variables: {
         id: user2.id,
       },
@@ -69,7 +58,14 @@ describe('query users', () => {
 
   test(`multiple`, async () => {
     const result = await query({
-      query: USERS_QUERY,
+      query: gql`
+        query {
+          users {
+            name
+            email
+          }
+        }
+      `,
     });
     expect(result.errors).toBeUndefined();
     expect(result.data.users).toBeDefined();

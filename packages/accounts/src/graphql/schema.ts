@@ -2,9 +2,7 @@ import { gql } from 'apollo-server';
 
 export const typeDefs = gql`
   # Directives
-  directive @hasScope(scopes: [String]) on OBJECT | FIELD_DEFINITION
-  directive @hasRole(roles: [Role]) on OBJECT | FIELD_DEFINITION
-  directive @isAuthenticated on OBJECT | FIELD_DEFINITION
+  directive @auth(roles: [Role], scopes: [String]) on OBJECT | FIELD_DEFINITION
 
   enum Role {
     reader
@@ -89,9 +87,9 @@ export const typeDefs = gql`
   # Queries
 
   type Query {
-    me: User @isAuthenticated
-    user(id: ID!): User
-    users: [User] @hasRole(roles: [admin])
+    me: User @auth
+    user(id: ID!): User @auth(scopes: ["user:Read"])
+    users: [User] @auth(roles: [admin])
   }
 
   # Mutations

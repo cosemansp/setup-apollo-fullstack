@@ -1,18 +1,20 @@
 import util from 'util';
-import { ApolloServer } from 'apollo-server-express';
-import { buildFederatedSchema } from '@apollo/federation';
+import { Request } from 'express';
 import { GraphQLSchema } from 'graphql';
+import { formatError } from 'apollo-errors';
 import { verify, decode } from 'jsonwebtoken';
 import { makeExecutableSchema } from 'apollo-server';
+import { buildFederatedSchema } from '@apollo/federation';
+import { ApolloServer, mergeSchemas } from 'apollo-server-express';
+
 import { resolvers } from './resolvers';
 import { typeDefs } from './schema';
 import { Context, JWTPayload } from './context';
 import { logManager } from '../logManager';
 import { graphqlLogger } from './logger';
-import { formatError } from 'apollo-errors';
 import { UserDataSource } from '@/dataSources/userDataSource';
 import config from '@/config';
-import { IsAuthenticatedDirective, HasRoleDirective, HasScopeDirective } from './directives';
+import { AuthDirective } from './directives';
 
 const log = logManager.getLogger('root.graphql');
 
@@ -20,22 +22,46 @@ const log = logManager.getLogger('root.graphql');
 let graphqlSchema: GraphQLSchema;
 if (config.FEDERATED) {
   // Federated schema
-  // - not supporting custom directives
-  // - not supporting subscriptions
-  graphqlSchema = buildFederatedSchema([{ typeDefs, resolvers }]);
+  const federatedSchema = buildFederatedSchema([{ typeDefs, resolvers }]);
+  // TODO: need to test if this works
+  graphqlSchema = mergeSchemas({
+    schemas: [federatedSchema],
+    schemaDirectives: {
+      auth: AuthDirective,
+    },
+  });
 } else {
   // Local schema
   graphqlSchema = makeExecutableSchema({
     typeDefs,
     resolvers,
     schemaDirectives: {
-      isAuthenticated: IsAuthenticatedDirective,
-      hasRole: HasRoleDirective,
-      hasScope: HasScopeDirective,
+      auth: AuthDirective,
     },
     allowUndefinedInResolve: true,
   });
 }
+
+const verifyAndDecodeToken = (req: Request) => {
+  const authorization = req.headers.authorization;
+  const token = authorization ? authorization.split(' ')[1] : '';
+  if (!token) {
+    return null;
+  }
+
+  try {
+    if (config.FEDERATED) {
+      // when federated, let the gateway verify the token
+      return decode(token) as JWTPayload;
+    }
+    return verify(token, config.ACCESS_TOKEN_SECRET) as JWTPayload;
+  } catch (err) {
+    // we don't throw an error here
+    // the auth directives will handle the authorization
+    log.warn('Failed to verify accessToken, ERR: ', err.message);
+    return null;
+  }
+};
 
 // we need to omit the dataSources because they are added later by the graphqlServer
 type BaseContext = Omit<Context, 'dataSources'>;
@@ -43,42 +69,22 @@ type BaseContext = Omit<Context, 'dataSources'>;
 export const apolloServer = new ApolloServer({
   schema: graphqlSchema,
   context: ({ res, req }): BaseContext => {
-    // Base context
-    const context: BaseContext = {
+    return {
       req,
       res,
+      user: verifyAndDecodeToken(req),
     };
-
-    // Add user on context if we have an authorization header
-    try {
-      const authorization = req.headers.authorization;
-      const token = authorization ? authorization.split(' ')[1] : '';
-      if (token) {
-        // if we have a token, verify it
-        if (config.FEDERATED) {
-          // when federated, let the gateway verify the token
-          context.user = decode(token) as JWTPayload;
-        } else {
-          context.user = verify(token, config.ACCESS_TOKEN_SECRET) as JWTPayload;
-        }
-      }
-    } catch (err) {
-      // we don't throw an error here
-      // the auth directives will handle the authorization
-      log.warn('Failed to verify accessToken, ERR: ', err.message);
-    }
-    return context;
   },
   dataSources() {
     return {
       user: new UserDataSource(),
     };
   },
-  formatError: (err) => {
-    log.error('GRAPQH_ERROR >>>', util.inspect(err, false, 4, true /* enable colors */));
-    return err;
-  },
-  // formatError: formatError as any,
+  // formatError: (err) => {
+  //   log.error('GRAPQH_ERROR >>>', util.inspect(err, false, 4, true /* enable colors */));
+  //   return err;
+  // },
+  formatError: formatError as any,
   extensions: [() => graphqlLogger],
   playground: true,
   introspection: true,
