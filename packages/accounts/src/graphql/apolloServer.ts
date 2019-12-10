@@ -9,19 +9,30 @@ import { typeDefs } from './schema';
 import { Context, JWTPayload } from './context';
 import { logManager } from '../logManager';
 import { graphqlLogger } from './logger';
+import { formatError } from 'apollo-errors';
 import { UserDataSource } from '@/dataSources/userDataSource';
-import config, { isProduction } from '@/config';
+import config from '@/config';
+import { IsAuthenticatedDirective, HasRoleDirective, HasScopeDirective } from './directives';
 
 const log = logManager.getLogger('root.graphql');
 
 // create GraphqlSchema
 let graphqlSchema: GraphQLSchema;
 if (config.FEDERATED) {
+  // Federated schema
+  // - not supporting custom directives
+  // - not supporting subscriptions
   graphqlSchema = buildFederatedSchema([{ typeDefs, resolvers }]);
 } else {
+  // Local schema
   graphqlSchema = makeExecutableSchema({
     typeDefs,
     resolvers,
+    schemaDirectives: {
+      isAuthenticated: IsAuthenticatedDirective,
+      hasRole: HasRoleDirective,
+      hasScope: HasScopeDirective,
+    },
     allowUndefinedInResolve: true,
   });
 }
@@ -67,6 +78,7 @@ export const apolloServer = new ApolloServer({
     log.error('GRAPQH_ERROR >>>', util.inspect(err, false, 4, true /* enable colors */));
     return err;
   },
+  // formatError: formatError as any,
   extensions: [() => graphqlLogger],
   playground: true,
   introspection: true,

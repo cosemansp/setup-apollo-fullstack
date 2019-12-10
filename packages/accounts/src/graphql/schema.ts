@@ -1,8 +1,18 @@
 import { gql } from 'apollo-server';
 
 export const typeDefs = gql`
-  # Types
+  # Directives
+  directive @hasScope(scopes: [String]) on OBJECT | FIELD_DEFINITION
+  directive @hasRole(roles: [Role]) on OBJECT | FIELD_DEFINITION
+  directive @isAuthenticated on OBJECT | FIELD_DEFINITION
 
+  enum Role {
+    reader
+    user
+    admin
+  }
+
+  # Types
   type Address {
     street: String
     city: String
@@ -79,9 +89,9 @@ export const typeDefs = gql`
   # Queries
 
   type Query {
-    me: User
+    me: User @isAuthenticated
     user(id: ID!): User
-    users: [User]
+    users: [User] @hasRole(roles: [admin])
   }
 
   # Mutations

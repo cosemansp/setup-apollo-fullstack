@@ -3,8 +3,15 @@ import { createTestClient } from '@test/apolloServerTesting';
 import { apolloServer } from '@/graphql/apolloServer';
 import { openDb, closeDb, clearDb } from '@test/dbHelper';
 import { UserModel } from '@/domain/userModel';
+import { sign } from 'jsonwebtoken';
+import config from '@/config';
 
-const { query } = createTestClient(apolloServer);
+const token = sign({ roles: ['admin'] }, config.ACCESS_TOKEN_SECRET);
+const { query } = createTestClient(apolloServer, {
+  headers: {
+    authorization: `Bearer ${token}`,
+  },
+});
 
 const USERS_QUERY = gql`
   query {
