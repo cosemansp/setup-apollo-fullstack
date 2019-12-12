@@ -22,7 +22,7 @@ import { RegisterMutation, UserAlreadyExistError, Registered } from '../graphqlT
 */
 export const register: RegisterMutation = async (root, { input }, { dataSources }) => {
   // check if the email is already in use
-  const user = await dataSources.user.loadOneByQuery({ email: input.email });
+  const user = await dataSources.user.loadByQuery({ email: input.email });
   if (user) {
     return {
       __typename: 'UserAlreadyExistError',

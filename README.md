@@ -38,6 +38,7 @@ npx pm2 list
 [*] Basic JWT Security
 [*] Mutations and error handling (see register & login)
 [*] Combined integration testing with mongoDb & graphql
+[*] Add caching to mongooseDataSource
 [ ] Advanced Federation features like type references, type extensions
 [ ] Handling security with custom directives
 

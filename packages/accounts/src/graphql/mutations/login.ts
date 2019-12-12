@@ -19,7 +19,7 @@ mutation {
 }
  */
 export const login: LoginMutation = async (root, { input }, { dataSources, res }) => {
-  const user = await dataSources.user.loadOneByQuery({ email: input.email });
+  const user = await dataSources.user.loadByQuery({ email: input.email });
   const password = user ? user.password : '';
   const validPassword = await compare(input.password, password);
   if (!validPassword) {

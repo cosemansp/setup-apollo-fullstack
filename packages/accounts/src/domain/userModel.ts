@@ -1,4 +1,5 @@
 import { Document, Schema, Model, model } from 'mongoose';
+import mongooseLeanId from 'mongoose-lean-id';
 
 export interface Address {
   street: string;
@@ -30,6 +31,7 @@ export var UserSchema: Schema = new Schema({
 });
 
 UserSchema.set('toObject', { virtuals: true });
+UserSchema.plugin(mongooseLeanId);
 
 export type UserModelType = Model<UserDoc>;
 export const UserModel: UserModelType = model<UserDoc>('User', UserSchema);
