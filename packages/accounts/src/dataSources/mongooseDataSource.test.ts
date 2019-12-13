@@ -45,11 +45,15 @@ describe('mongooseDataSource', () => {
     sut.initialize({});
 
     // act
-    const result1 = await sut.load(joe.id);
-    const result2 = await sut.load(joe.id);
+    const [result1, result2, result3] = await Promise.all([
+      sut.load(joe.id),
+      sut.load(joe.id),
+      sut.load(jane.id),
+    ]);
 
     // assert
     expect(result1).toBe(result2);
+    expect(result3.name).toBe(jane.name);
     expect(findSpy).toBeCalledTimes(1);
   });
 
@@ -134,6 +138,18 @@ describe('mongooseDataSource', () => {
     expect(result.name).toBe(joe.name);
   });
 
+  test('loadByQuery - with batching', async () => {
+    // arrange
+    const sut = new UserTestDataSource();
+    sut.initialize({});
+
+    // act
+    const result = await sut.loadByQuery({ name: 'joe' });
+
+    // assert
+    expect(result.name).toBe(joe.name);
+  });
+
   test('loadByQuery - with caching', async () => {
     // arrange
     const cache = new InMemoryLRUCache();
@@ -160,6 +176,24 @@ describe('mongooseDataSource', () => {
 
     // assert
     expect(result).toBeArrayOfSize(2);
+  });
+
+  test('loadManyByQuery - with batching', async () => {
+    // arrange
+    const sut = new UserTestDataSource();
+    const findSpy = jest.spyOn(UserModel, 'find');
+    sut.initialize({});
+
+    // act
+    const [result1, result2] = await Promise.all([
+      sut.loadManyByQuery({ company: 'apple' }),
+      sut.loadManyByQuery({ name: 'joe' }),
+    ]);
+
+    // assert
+    expect(findSpy).toBeCalledTimes(1);
+    expect(result1).toBeArrayOfSize(2);
+    expect(result2).toBeArrayOfSize(1);
   });
 
   test('loadManyByQuery - with caching', async () => {

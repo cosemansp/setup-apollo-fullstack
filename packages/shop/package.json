@@ -61,6 +61,7 @@
     "graphql": "^14.5.8",
     "graphql-import-node": "^0.0.4",
     "graphql-type-json": "0.3.0",
+    "sift": "^9.0.4",
     "sort-on": "^4.1.0"
   },
   "jest": {

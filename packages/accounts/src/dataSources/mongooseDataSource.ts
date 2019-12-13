@@ -3,6 +3,7 @@ import { keyBy, get } from 'lodash';
 import { DataSource } from 'apollo-datasource';
 import { InMemoryLRUCache } from 'apollo-server-caching';
 import DataLoader from 'dataloader';
+import sift from 'sift';
 
 // Base on:
 // https://github.com/JamesLefrere/apollo-datasource-mongodb
@@ -20,6 +21,7 @@ export class MongooseDataSource<
   protected context: TContext;
   protected cache: InMemoryLRUCache<TDoc>;
   protected loader: DataLoader<ID, TDoc>;
+  protected queryLoader: DataLoader<any, TDoc[]>;
   protected readonly cachePrefix: string;
 
   constructor(protected model: TModel) {
@@ -33,6 +35,15 @@ export class MongooseDataSource<
         });
     });
 
+    this.queryLoader = new DataLoader((queries) => {
+      return model
+        .find({ $or: queries })
+        .lean()
+        .then((items) => {
+          return queries.map((query) => items.filter(sift(query)));
+        });
+    });
+
     this.cachePrefix = `mongo-${model.collection.collectionName}`;
   }
 
@@ -43,7 +54,10 @@ export class MongooseDataSource<
 
   private async storeInCache(doc: any, key: string, ttl?: number) {
     if (!Number.isInteger(ttl)) return null;
-    return this.cache.set(key, doc, { ttl });
+    if (this.cache) {
+      return this.cache.set(key, doc, { ttl });
+    }
+    return Promise.resolve();
   }
 
   private getKey(id) {
@@ -89,16 +103,22 @@ export class MongooseDataSource<
     const serializedId = id && typeof id === 'object' ? JSON.stringify(id) : id;
     const key = this.getKey(serializedId);
     await this.cache.delete(key);
+    this.loader.clear(id);
   }
 
   async loadByQuery(query: any, options: Options = {}): Promise<TDoc> {
     const key = this.getKey(JSON.stringify(query));
+
+    // try to get from cache
     if (this.cache) {
       const cacheDocs: any = await this.cache.get(key);
       if (cacheDocs) return cacheDocs as TDoc;
     }
 
+    // load query (BATCHING NOT POSSIBLE HERE)
     const doc = await this.model.findOne(query).lean();
+
+    // store in cache
     if (doc) {
       await Promise.all([
         this.storeInCache(doc, key, options.ttl),
@@ -110,13 +130,18 @@ export class MongooseDataSource<
 
   async loadManyByQuery(query: any, options: Options = {}): Promise<TDoc[]> {
     const queryKey = this.getKey(JSON.stringify(query));
+
+    // try to get from cache
     if (this.cache) {
       const cacheDocs: any = await this.cache.get(queryKey);
       if (cacheDocs) return cacheDocs as TDoc[];
     }
 
-    const docs = await this.model.find(query).lean();
-    if (docs.length > 0) {
+    // load query in batch
+    const docs = await this.queryLoader.load(query);
+
+    // store in cache
+    if (docs.length > 0 && this.cache) {
       const promises = docs.map((doc) => {
         const key = this.getKey(doc.id);
         return this.storeInCache(doc, key, options.ttl);
